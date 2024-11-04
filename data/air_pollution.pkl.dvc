@@ -1,0 +1,5 @@
+outs:
+- md5: e92fc6888606d9409417161d7914dd36
+  size: 2052616
+  hash: md5
+  path: air_pollution.pkl
