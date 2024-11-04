@@ -1,0 +1,6 @@
+outs:
+- md5: b6c634ebab8fb050af37511e6dafcb09.dir
+  size: 9698000
+  nfiles: 15
+  hash: md5
+  path: data_store_pkl_files
