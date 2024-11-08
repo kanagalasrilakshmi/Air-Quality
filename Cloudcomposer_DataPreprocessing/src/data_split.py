@@ -1,26 +1,36 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
-import os
 import logging
+from google.cloud import storage
+from io import BytesIO
+import os
 
 # Configure logging for anomaly detection
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 class DataSplitter:
-    def __init__(self, pickle_file_path):
+    def __init__(self, gcs_bucket_name, pickle_file_path):
+        self.gcs_bucket_name = gcs_bucket_name
         self.pickle_file_path = pickle_file_path
         self.dataframe = None
         self.train_df = None
         self.test_df = None
 
     def load_pickle(self):
-        if not os.path.exists(self.pickle_file_path):
-            logger.error(f"Pickle file '{self.pickle_file_path}' does not exist.")
-            return ["Pickle file not found"]
+        """Load a pickle file from Google Cloud Storage."""
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(self.gcs_bucket_name)
+        blob = bucket.blob(self.pickle_file_path)
         
-        self.dataframe = pd.read_pickle(self.pickle_file_path)
-        logger.info(f"Loaded data from {self.pickle_file_path}.")
+        try:
+            data = blob.download_as_bytes()
+            self.dataframe = pd.read_pickle(BytesIO(data))
+            logger.info(f"Loaded data from GCS at '{self.pickle_file_path}'.")
+        except Exception as e:
+            logger.error(f"Error loading data from GCS: {e}")
+            return ["Error loading data"]
+        
         if self.dataframe.empty:
             logger.warning("Loaded DataFrame is empty.")
             return ["Loaded DataFrame is empty"]
@@ -66,21 +76,28 @@ class DataSplitter:
             logger.error("No split data to save. Please split the data first.")
             return ["No split data to save"]
         
-        # Verify paths
-        os.makedirs(os.path.dirname(train_output_path), exist_ok=True)
-        os.makedirs(os.path.dirname(test_output_path), exist_ok=True)
-        
-        self.train_df.to_pickle(train_output_path)
-        self.test_df.to_pickle(test_output_path)
-        logger.info(f"Training DataFrame saved as '{train_output_path}' and Testing DataFrame saved as '{test_output_path}'.")
-        return []
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(self.gcs_bucket_name)
 
-def split():
-    pickle_file_path = os.path.join(os.getcwd(), "dags/DataPreprocessing/src/data_store_pkl_files/resampled_data.pkl")
-    train_output_pickle_file = os.path.join(os.getcwd(), "dags/DataPreprocessing/src/data_store_pkl_files/train_data/train_data.pkl")
-    test_output_pickle_file = os.path.join(os.getcwd(), "dags/DataPreprocessing/src/data_store_pkl_files/test_data/test_data.pkl")
+        # Save train DataFrame
+        train_blob = bucket.blob(train_output_path)
+        train_buffer = BytesIO()
+        self.train_df.to_pickle(train_buffer)
+        train_buffer.seek(0)
+        train_blob.upload_from_file(train_buffer, content_type='application/octet-stream')
+        logger.info(f"Training DataFrame saved to GCS at '{train_output_path}'.")
 
-    data_splitter = DataSplitter(pickle_file_path)
+        # Save test DataFrame
+        test_blob = bucket.blob(test_output_path)
+        test_buffer = BytesIO()
+        self.test_df.to_pickle(test_buffer)
+        test_buffer.seek(0)
+        test_blob.upload_from_file(test_buffer, content_type='application/octet-stream')
+        logger.info(f"Testing DataFrame saved to GCS at '{test_output_path}'.")
+
+def perform_data_split(bucket_name, input_pickle_file_path, output_train_file_path, output_test_file_path, test_size=0.2, random_state=42):
+    """Perform data splitting and save results to GCS."""
+    data_splitter = DataSplitter(bucket_name, input_pickle_file_path)
     anomalies = []
 
     # Step 1: Load and check for anomalies
@@ -89,11 +106,11 @@ def split():
 
     # Step 2: Split data and check for anomalies
     if not anomalies:
-        anomalies.extend(data_splitter.split_data(test_size=0.2, random_state=42))
+        anomalies.extend(data_splitter.split_data(test_size=test_size, random_state=random_state))
     
     # Step 3: Save split data and check for anomalies
     if not anomalies:
-        anomalies.extend(data_splitter.save_as_pickle(train_output_pickle_file, test_output_pickle_file))
+        data_splitter.save_as_pickle(output_train_file_path, output_test_file_path)
 
     if anomalies:
         logger.error(f"Anomalies detected during splitting: {anomalies}")
@@ -102,9 +119,11 @@ def split():
     
     return anomalies
 
+# This function should be called in the context of a DAG in Cloud Composer
 if __name__ == "__main__":
-    detected_anomalies = split()
-    if detected_anomalies:
-        logger.error(f"Detected Anomalies: {detected_anomalies}")
-    else:
-        logger.info("No anomalies detected. Process completed successfully.")
+    BUCKET_NAME = 'your_bucket_name'  # Replace with your GCS bucket name
+    INPUT_PICKLE_FILE_PATH = 'dags/DataPreprocessing/src/data_store_pkl_files/resampled_data.pkl'
+    OUTPUT_TRAIN_FILE_PATH = 'dags/DataPreprocessing/src/data_store_pkl_files/train_data/train_data.pkl'
+    OUTPUT_TEST_FILE_PATH = 'dags/DataPreprocessing/src/data_store_pkl_files/test_data/test_data.pkl'
+    
+    perform_data_split(BUCKET_NAME, INPUT_PICKLE_FILE_PATH, OUTPUT_TRAIN_FILE_PATH, OUTPUT_TEST_FILE_PATH)

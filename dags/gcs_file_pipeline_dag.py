@@ -636,32 +636,40 @@ merge_branch_anamoly_detection_val_test= DummyOperator(task_id='merge_branch_ana
 data_Loader = PythonOperator(
     task_id='load_data_pickle',
     python_callable=stack_csvs_to_pickle,
-    dag=dag
+    op_kwargs={
+        'bucket_name': os.environ.get('BUCKET_NAME', 'airquality-mlops-rg'),  # Replace with your bucket name
+        'folder_path': os.environ.get('FOLDER_PATH', 'air_pollution_raw/'),   # Replace with your folder path
+        'output_pickle_file': os.environ.get('OUTPUT_PICKLE_FILE', 'processed_data/air_pollution.pkl'),  # Replace with your output file path
+    },
+    dag=dag,
 )
-
-with DAG('gcs_csv_stack_dag', default_args=default_args, schedule_interval=None) as dag:
-
-    stack_csvs_task = PythonOperator(
-        task_id='stack_csvs',
-        python_callable=stack_csvs_to_pickle,
-        op_kwargs={
-            'bucket_name': 'airquality-mlops-rg',
-            'folder_path': 'air_pollution_raw/',
-            'output_pickle_file': 'processed_data/air_pollution.pkl'
-        },
-    )
 
 data_Bias = PythonOperator(
     task_id='bias_detection_and_mitigation',
     python_callable=data_biasing,
-    dag=dag)
+    op_kwargs={
+        'bucket_name': 'airquality-mlops-rg',  # Replace with your GCS bucket name
+        'input_pickle_file': 'processed_data/air_pollution.pkl',
+        'sensitive_feature': 'month',
+        'threshold': 0.2,
+    },
+    dag=dag,
+)
 
-# split data into traning and testing
 data_Split = PythonOperator(
     task_id='split_train_test',
     python_callable=split,
-    dag=dag
+    op_kwargs={
+        'bucket_name': 'airquality-mlops-rg',  # Replace with your GCS bucket name
+        'input_pickle_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/resampled_data.pkl',
+        'output_train_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/train_data/train_data.pkl',
+        'output_test_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/test_data/test_data.pkl',
+        'test_size': 0.2,
+        'random_state': 42,
+    },
+    dag=dag,
 )
+
 
 data_schema_original = PythonOperator(
     task_id = 'check_schema_of_original_air_data',
@@ -669,11 +677,15 @@ data_schema_original = PythonOperator(
     dag = dag
 )
 
-# pivot the data to contain pm2.5 parameters for train data
 data_train_pivot = PythonOperator(
     task_id='pivot_data_train',
     python_callable=pivoting_data_train,
-    dag=dag
+    op_kwargs={
+        'bucket_name': 'your_bucket_name',  # Replace with your GCS bucket name
+        'input_file_path': 'processed_data/stacked_air_pollution.pkl',
+        'output_file_path': 'pivoted_data/pivoted_air_pollution.pkl',
+    },
+    dag=dag,
 )
 
 # pivot the data to contain pm2.5 parameters for test data
@@ -683,11 +695,16 @@ data_test_pivot = PythonOperator(
     dag=dag
 )
 
-# remove values regarding other gases train data
 data_remove_cols_train = PythonOperator(
     task_id='data_remove_cols_train',
     python_callable=removal_of_uneccesary_cols_train,
-    dag=dag
+    op_kwargs={
+        'bucket_name': 'your_bucket_name',  # Replace with your GCS bucket name
+        'input_file_path': 'processed_data/stacked_air_pollution.pkl',
+        'output_file_path': 'cleaned_data/cleaned_air_pollution.pkl',
+        'columns_to_drop': ['unnecessary_column1', 'unnecessary_column2'],  # Replace with actual columns to drop
+    },
+    dag=dag,
 )
 
 # remove values regarding other gases test data
