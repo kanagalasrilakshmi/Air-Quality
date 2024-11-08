@@ -1,25 +1,32 @@
 import pandas as pd
 import os
 import logging
+from google.cloud import storage
 
 # Configure logging for anomaly detection
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 class DataProcessor:
-    def __init__(self, file_path):
+    def __init__(self, bucket_name, file_path):
+        self.bucket_name = bucket_name
         self.file_path = file_path
         self.data = None
         self.pivoted_data = None
 
     def load_data(self):
+        # Load the data from GCS
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(self.bucket_name)
+        blob = bucket.blob(self.file_path)
+
         # Check if the file exists
-        if not os.path.exists(self.file_path):
-            logger.error(f"File '{self.file_path}' does not exist.")
+        if not blob.exists():
+            logger.error(f"File '{self.file_path}' does not exist in bucket '{self.bucket_name}'.")
             return ["File does not exist"]
         
         # Load the data
-        self.data = pd.read_pickle(self.file_path)
+        self.data = pd.read_pickle(blob.download_as_bytes())
         logger.info(f"Data loaded from {self.file_path}")
         return []
 
@@ -72,17 +79,25 @@ class DataProcessor:
 
     def save_as_pickle(self, output_path):
         if self.pivoted_data is not None:
-            self.pivoted_data.to_pickle(output_path)
+            storage_client = storage.Client()
+            bucket = storage_client.bucket(self.bucket_name)
+            blob = bucket.blob(output_path)
+
+            # Save pivoted data to GCS
+            blob.upload_from_string(self.pivoted_data.to_pickle(), content_type='application/octet-stream')
             logger.info(f"Pivoted DataFrame saved as '{output_path}'.")
             return []
         else:
             logger.error("No pivoted data to save. Please pivot the data first.")
-            return ["No pivoted data to save"]
+            return []
 
 def pivot_parameters():
-    file_path = os.path.join(os.getcwd(), "dags/DataPreprocessing/src/data_store_pkl_files/train_data/train_data.pkl")
-    output_pickle_file = os.path.join(os.getcwd(), "dags/DataPreprocessing/src/data_store_pkl_files/train_data/pivoted_train_data.pkl")
-    processor = DataProcessor(file_path)
+    # Load environment variables for bucket names and file paths
+    bucket_name = os.environ.get("DATA_BUCKET_NAME")
+    file_path = os.environ.get("TRAIN_DATA_INPUT_FILE_PATH")
+    output_pickle_file = os.environ.get("TRAIN_DATA_OUTPUT_FILE_PATH")
+
+    processor = DataProcessor(bucket_name, file_path)
     
     anomalies = []
     # Step 1: Load data and check for file existence anomalies
@@ -110,99 +125,3 @@ if __name__ == "__main__":
         logger.error(f"Detected Anomalies: {detected_anomalies}")
     else:
         logger.info("No anomalies detected. Process completed successfully.")
-
-
-import pandas as pd
-import logging
-from google.cloud import storage
-from io import BytesIO
-
-# Configure logging for anomaly detection
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
-class DataProcessor:
-    def __init__(self, gcs_bucket_name, file_path):
-        self.gcs_bucket_name = gcs_bucket_name
-        self.file_path = file_path
-        self.data = None
-        self.pivoted_data = None
-
-    def load_data(self):
-        """Load data from Google Cloud Storage."""
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(self.gcs_bucket_name)
-        blob = bucket.blob(self.file_path)
-
-        try:
-            data = blob.download_as_bytes()
-            self.data = pd.read_pickle(BytesIO(data))
-            logger.info(f"Data loaded from GCS at '{self.file_path}'.")
-        except Exception as e:
-            logger.error(f"Error loading data from GCS: {e}")
-            return ["Error loading data"]
-        
-        return self.check_column_consistency()
-
-    def check_column_consistency(self):
-        """Check for the presence of required columns."""
-        required_columns = {'date', 'parameter', 'value'}
-        missing_columns = required_columns - set(self.data.columns)
-        if missing_columns:
-            logger.error(f"Missing columns in DataFrame: {', '.join(missing_columns)}")
-            return [f"Missing columns: {', '.join(missing_columns)}"]
-        
-        logger.info("All required columns are present.")
-        return []
-
-    def pivot_data(self):
-        """Pivot the data as required."""
-        if self.data is None:
-            logger.error("No data loaded. Please load data first.")
-            return ["No data to pivot"]
-
-        # Example pivot operation (this should be customized based on your needs)
-        self.pivoted_data = self.data.pivot_table(index='date', columns='parameter', values='value', aggfunc='mean')
-        logger.info("Data pivoted successfully.")
-        return []
-
-    def save_pivoted_data(self, output_path):
-        """Save the pivoted data to Google Cloud Storage."""
-        if self.pivoted_data is None:
-            logger.error("No pivoted data to save. Please pivot the data first.")
-            return ["No pivoted data to save"]
-        
-        storage_client = storage.Client()
-        bucket = storage_client.bucket(self.gcs_bucket_name)
-        output_blob = bucket.blob(output_path)
-
-        # Save pivoted DataFrame
-        buffer = BytesIO()
-        self.pivoted_data.to_pickle(buffer)
-        buffer.seek(0)
-        output_blob.upload_from_file(buffer, content_type='application/octet-stream')
-        logger.info(f"Pivoted data saved to GCS at '{output_path}'.")
-
-def pivot_parameters(bucket_name, input_file_path, output_file_path):
-    """Perform data loading, pivoting, and saving results to GCS."""
-    processor = DataProcessor(bucket_name, input_file_path)
-
-    anomalies = processor.load_data()
-    if anomalies:
-        logger.error(f"Errors encountered while loading data: {anomalies}")
-        return
-
-    anomalies.extend(processor.pivot_data())
-    if anomalies:
-        logger.error(f"Errors encountered during data pivoting: {anomalies}")
-        return
-
-    processor.save_pivoted_data(output_file_path)
-
-# This function should be called in the context of a DAG in Cloud Composer
-if __name__ == "__main__":
-    BUCKET_NAME = 'your_bucket_name'  # Replace with your GCS bucket name
-    INPUT_FILE_PATH = 'processed_data/stacked_air_pollution.pkl'
-    OUTPUT_FILE_PATH = 'pivoted_data/pivoted_air_pollution.pkl'
-    
-    pivot_parameters(BUCKET_NAME, INPUT_FILE_PATH, OUTPUT_FILE_PATH)

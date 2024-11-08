@@ -702,7 +702,8 @@ data_remove_cols_train = PythonOperator(
         'bucket_name': 'your_bucket_name',  # Replace with your GCS bucket name
         'input_file_path': 'processed_data/stacked_air_pollution.pkl',
         'output_file_path': 'cleaned_data/cleaned_air_pollution.pkl',
-        'columns_to_drop': ['unnecessary_column1', 'unnecessary_column2'],  # Replace with actual columns to drop
+        'columns_to_drop': ['co', 'no', 'no2', 'o3', 'so2']
+, 
     },
     dag=dag,
 )
@@ -714,11 +715,15 @@ data_remove_cols_test = PythonOperator(
     dag=dag
 )
 
-# handle missing values train data
 handle_missing_vals_train = PythonOperator(
     task_id='handle_missing_vals_train',
     python_callable=check_missing_values_train,
-    dag=dag
+    op_kwargs={
+        'bucket_name': 'your_bucket_name',  # Replace with your GCS bucket name
+        'input_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/train_data/cleaned_train_data.pkl',
+        'output_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/train_data/no_null_train_data.pkl',
+    },
+    dag=dag,
 )
 
 # handle missing values test data
@@ -728,11 +733,15 @@ handle_missing_vals_test = PythonOperator(
     dag=dag
 )
 
-# handle anamolies for train data
 anamolies_vals_train = PythonOperator(
     task_id='anamolies_vals_train',
     python_callable=anamoly_detection_train,
-    dag=dag
+    op_kwargs={
+        'bucket_name': 'your_bucket_name',  # Replace with your GCS bucket name
+        'input_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/train_data/no_null_train_data.pkl',
+        'output_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/train_data/no_anomaly_train_data.pkl',
+    },
+    dag=dag,
 )
 
 #handle anamolies for test data
@@ -742,11 +751,15 @@ anamolies_vals_test = PythonOperator(
     dag=dag
 )
 
-# feature engineering for train data
 feature_engineering_train = PythonOperator(
     task_id='feature_engineering_train',
     python_callable=feature_eng_train,
-    dag=dag
+    op_kwargs={
+        'bucket_name': 'your_bucket_name',  # Replace with your GCS bucket name
+        'input_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/train_data/no_anomaly_train_data.pkl',
+        'output_file_path': 'dags/DataPreprocessing/src/data_store_pkl_files/train_data/feature_eng_train_data.pkl',
+    },
+    dag=dag,
 )
 
 data_schema_train_data_feature_eng = PythonOperator(

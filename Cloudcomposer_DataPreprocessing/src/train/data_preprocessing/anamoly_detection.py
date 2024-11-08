@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import os
 import logging
+from google.cloud import storage
+from io import BytesIO
 
 # Configure logging for anomaly detection
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -17,7 +19,20 @@ class DataCleaner:
 
     def load_data(self):
         try:
-            self.data = pd.read_pickle(self.file_path)
+            # Load data from GCS
+            storage_client = storage.Client()
+            bucket_name = os.environ.get("DATA_BUCKET_NAME")
+            blob_name = os.path.join(self.file_path)
+            bucket = storage_client.bucket(bucket_name)
+            blob = bucket.blob(blob_name)
+
+            if not blob.exists():
+                logger.error(f"File '{self.file_path}' does not exist in bucket '{bucket_name}'.")
+                return ["File does not exist"]
+
+            # Download the blob and load it into a DataFrame
+            data = blob.download_as_bytes()
+            self.data = pd.read_pickle(BytesIO(data))
             logger.info(f"Data loaded from {self.file_path}.")
         except Exception as e:
             logger.error(f"Failed to load data: {e}")
@@ -66,7 +81,18 @@ class DataCleaner:
 
     def save_as_pickle(self, output_path):
         if self.data is not None:
-            self.data.to_pickle(output_path)
+            # Save the cleaned DataFrame to GCS
+            storage_client = storage.Client()
+            bucket_name = os.environ.get("DATA_BUCKET_NAME")
+            output_blob_name = os.path.join(output_path)
+            bucket = storage_client.bucket(bucket_name)
+            blob = bucket.blob(output_blob_name)
+
+            # Write DataFrame to a bytes buffer and upload
+            buffer = BytesIO()
+            self.data.to_pickle(buffer)
+            buffer.seek(0)
+            blob.upload_from_file(buffer, content_type='application/octet-stream')
             logger.info(f"Cleaned DataFrame saved as '{output_path}'.")
         else:
             logger.error("No data available to save. Please load and clean the data first.")
@@ -74,8 +100,8 @@ class DataCleaner:
 
 def anamoly_detection_val():
     # Path to the input pickle file and output pickle file
-    file_path = os.path.join(os.getcwd(), "dags/DataPreprocessing/src/data_store_pkl_files/train_data/no_null_train_data.pkl")
-    output_pickle_file = os.path.join(os.getcwd(), "dags/DataPreprocessing/src/data_store_pkl_files/train_data/no_anamoly_train_data.pkl")
+    file_path = os.environ.get("TRAIN_DATA_INPUT_FILE_PATH")
+    output_pickle_file = os.environ.get("TRAIN_DATA_OUTPUT_FILE_PATH")
     
     cleaner = DataCleaner(file_path)
     cleaner.load_data()
