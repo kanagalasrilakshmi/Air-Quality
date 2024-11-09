@@ -96,8 +96,15 @@ class DataCleaner:
 
 def remove_unnecessary_cols():
     # Paths for input and output pickle files
-    file_path = os.environ.get("TRAIN_DATA_INPUT_FILE_PATH")
-    output_pickle_file = os.environ.get("TRAIN_DATA_OUTPUT_FILE_PATH")
+    run_mode = os.environ.get("RUN_MODE", "train")  # Default to "train"
+
+    # Set input and output file paths based on mode
+    if run_mode == "test":
+        file_path = os.environ.get("TEST_DATA_RM_COL_INPUT")
+        output_pickle_file = os.environ.get("TEST_DATA_RM_COL_OUTPUT")
+    else:  # Train mode
+        file_path = os.environ.get("TRAIN_DATA_RM_COL_INPUT")
+        output_pickle_file = os.environ.get("TRAIN_DATA_RM_COL_OUTPUT")
     columns_to_drop = ['co', 'no', 'no2', 'o3', 'so2']
     cleaner = DataCleaner(file_path)
 

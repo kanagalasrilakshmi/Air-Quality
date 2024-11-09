@@ -1,41 +1,23 @@
 # variables.tf
 
-variable "subscription_id" {
-  description = "The subscription ID for the Azure account"
+variable "project_id" {
+  description = "The ID of the project where resources will be created"
   type        = string
-  default     = "var.subscription_id"
 }
 
-variable "resource_group_name" {
-  description = "Name of the resource group"
+variable "region" {
+  description = "Region where resources will be created"
   type        = string
-  default     = "mlops-airquality-rg"
+  default     = "us-central1"
 }
 
-variable "location" {
-  description = "Azure region where the resources will be created"
+variable "data_bucket_name" {
+  description = "Name of the GCS bucket for data storage"
   type        = string
-  default     = "East US"
 }
 
-variable "storage_account_name" {
-  description = "Name of the storage account"
+variable "composer_env_name" {
+  description = "Name of the Cloud Composer environment"
   type        = string
-  default     = "airquality"
 }
 
-variable "databricks_workspace_name" {
-  description = "Name of the Databricks workspace"
-  type        = string
-  default     = "mlops-airquality-databricks"
-}
-
-variable "ml_workspace_name" {
-  description = "Name of the Azure Machine Learning workspace"
-  type        = string
-  default     = "mlops-airquality-workspace"
-}
-
-variable "principal_id" {
-  type = string
-}

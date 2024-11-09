@@ -3,10 +3,12 @@ import numpy as np
 import logging
 import os
 import json
+from google.cloud import storage
+from io import BytesIO
 
 # Set up logging configuration
 def setup_logging():
-    log_file_path = 'check_output_data_schema_test.log'
+    log_file_path = 'check_output_data_schema_train.log'
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -19,10 +21,17 @@ def setup_logging():
 
 logger = setup_logging()
 
-# Constants for file paths
-SCHEMA_FILE_PATH = os.path.join(os.getcwd(), 'data_schema_test.json')
-STATS_FILE_PATH = os.path.join(os.getcwd(), 'data_statistics_test.json')
-DATASET_FILE_PATH = os.path.join(os.getcwd(), 'dags/DataPreprocessing/src/data_store_pkl_files/test_data/feature_eng_test_data.pkl')
+run_mode = os.environ.get("RUN_MODE", "train")  # Default to "train"
+
+# Constants for file paths based on run mode
+if run_mode == "test":
+    SCHEMA_FILE_PATH = os.environ.get("TEST_SCHEMA_FILE_PATH")
+    STATS_FILE_PATH = os.environ.get("TEST_STATS_FILE_PATH")
+    DATASET_FILE_PATH = os.environ.get("TEST_DATASET_FILE_PATH")
+else:  # Train mode
+    SCHEMA_FILE_PATH = os.environ.get("TRAIN_SCHEMA_FILE_PATH")
+    STATS_FILE_PATH = os.environ.get("TRAIN_STATS_FILE_PATH")
+    DATASET_FILE_PATH = os.environ.get("TRAIN_DATASET_FILE_PATH")
 
 # Function to generate schema dynamically based on dataset
 def generate_schema(data, required_columns=[]):
@@ -70,8 +79,14 @@ def generate_statistics(data):
     # Return the generated statistics
     return stats
 
-# Helper function to save data (schema or statistics) to a JSON file
+# Helper function to save data (schema or statistics) to a JSON file in GCS
 def save_to_file(data, file_path):
+    storage_client = storage.Client()
+    bucket_name = os.environ.get("DATA_BUCKET_NAME")
+    blob_name = os.path.join(file_path)
+    bucket = storage_client.bucket(bucket_name)
+    blob = bucket.blob(blob_name)
+
     def convert_types(obj):
         if isinstance(obj, (np.integer, int)):
             return int(obj)
@@ -87,9 +102,10 @@ def save_to_file(data, file_path):
 
     # Convert data for JSON serialization
     data = convert_types(data)
+
+    # Save the data to GCS
     try:
-        with open(file_path, "w") as f:
-            json.dump(data, f, indent=4)
+        blob.upload_from_string(json.dumps(data, indent=4), content_type='application/json')
         logger.info(f"Data saved to {file_path}")
     except Exception as e:
         logger.error(f"Failed to save data to {file_path}: {e}")
@@ -146,7 +162,15 @@ def validate_data(data, schema):
 # Main function to load data, generate schema and statistics, and run validation
 def main_generate_schema_and_statistics():
     try:
-        data = pd.read_pickle(DATASET_FILE_PATH)
+        storage_client = storage.Client()
+        bucket_name = os.environ.get("DATA_BUCKET_NAME")
+        blob_name = os.path.join(DATASET_FILE_PATH)
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(blob_name)
+
+        # Download the blob and load it into a DataFrame
+        data_bytes = blob.download_as_bytes()
+        data = pd.read_pickle(BytesIO(data_bytes))
         logger.info(f"Loaded dataset from {DATASET_FILE_PATH}")
     except Exception as e:
         logger.error(f"Failed to load dataset from {DATASET_FILE_PATH}: {e}")
@@ -156,7 +180,7 @@ def main_generate_schema_and_statistics():
     schema = generate_schema(data, required_columns=["pm25", "hour", "day_of_week", "month"])
     stats = generate_statistics(data)
 
-    # Save schema and statistics to files
+    # Save schema and statistics to files in GCS
     save_to_file(schema, SCHEMA_FILE_PATH)
     save_to_file(stats, STATS_FILE_PATH)
 

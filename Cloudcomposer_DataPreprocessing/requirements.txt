@@ -2,12 +2,20 @@
 apache-airflow-providers-google==8.12.0
 
 # TensorFlow
-tensorflow====2.12.0
+tensorflow==2.12.0
 
 # Scientific Computing
-scipy==1.10.1
-numpy==1.24.3
-pandas==2.0.3
+#scipy==1.10.1
+#numpy==1.21.2
+#pandas==2.0.3
 
 # Google Cloud Libraries
+#google-cloud-storage==2.7.0
+fairlearn
+
+
+apache-airflow==2.9.3
+scipy==1.9.3
+numpy==1.23.5
+pandas==1.5.3
 google-cloud-storage==2.7.0
