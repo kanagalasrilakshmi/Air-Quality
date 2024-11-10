@@ -1,28 +1,30 @@
 import pandas as pd
 import os
 import logging
+import io
 from google.cloud import storage
 from io import BytesIO
+
 
 # Configure logging for anomaly detection
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
 class DataCleaner:
-    def __init__(self, file_path):
+    def __init__(self, bucket_name, file_path):
+        self.bucket_name = bucket_name
         self.file_path = file_path
         self.data = None
 
     def load_data(self):
         # Load data from GCS
         storage_client = storage.Client()
-        bucket_name = os.environ.get("DATA_BUCKET_NAME")
         blob_name = os.path.join(self.file_path)
-        bucket = storage_client.bucket(bucket_name)
+        bucket = storage_client.bucket(self.bucket_name)
         blob = bucket.blob(blob_name)
 
         if not blob.exists():
-            logger.error(f"File '{self.file_path}' does not exist in bucket '{bucket_name}'.")
+            logger.error(f"File '{self.file_path}' does not exist in bucket '{self.bucket_name}'.")
             return ["File does not exist"]
 
         # Download the blob and load it into a DataFrame
@@ -80,25 +82,26 @@ class DataCleaner:
 
         # Save the cleaned DataFrame to GCS
         storage_client = storage.Client()
-        bucket_name = os.environ.get("DATA_BUCKET_NAME")
         output_blob_name = os.path.join(output_path)
-        bucket = storage_client.bucket(bucket_name)
+        bucket = storage_client.bucket(self.bucket_name)
         blob = bucket.blob(output_blob_name)
 
         # Write DataFrame to a bytes buffer and upload
-        buffer = BytesIO()
-        self.data.to_pickle(buffer)
-        buffer.seek(0)  # Ensure the buffer is at the start before uploading
-        blob.upload_from_file(buffer, content_type='application/octet-stream')
+        with io.BytesIO() as output:
+            self.data.to_pickle(output)
+            output.seek(0)  # Ensure the buffer is at the start before uploading
+            blob.upload_from_file(output, content_type='application/octet-stream')
         logger.info(f"Cleaned DataFrame saved as '{output_path}'.")
         return []
 
 def remove_uneccesary_cols():
     # Paths for input and output pickle files
+    bucket_name = os.environ.get("DATA_BUCKET_NAME")
     file_path = os.environ.get("TRAIN_DATA_RM_COL_INPUT")
     output_pickle_file = os.environ.get("TRAIN_DATA_RM_COL_OUTPUT")
     columns_to_drop = ['co', 'no', 'no2', 'o3', 'so2']
-    cleaner = DataCleaner(file_path)
+
+    cleaner = DataCleaner(bucket_name, file_path)
 
     anomalies = []
     # Step 1: Load data
