@@ -94,7 +94,7 @@ class DataCleaner:
         logger.info(f"Cleaned DataFrame saved as '{output_path}'.")
         return []
 
-def remove_unecessary_cols():
+def remove_uneccesary_cols():
     # Paths for input and output pickle files
     file_path = os.environ.get("TEST_DATA_RM_COL_INPUT")
     output_pickle_file = os.environ.get("TEST_DATA_RM_COL_OUTPUT")
@@ -121,7 +121,7 @@ def remove_unecessary_cols():
     return anomalies  # Return a list of all detected anomalies
 
 if __name__ == "__main__":
-    detected_anomalies = remove_unecessary_cols()
+    detected_anomalies = remove_uneccesary_cols()
     if detected_anomalies:
         logger.error(f"Detected Anomalies: {detected_anomalies}")
     else:
