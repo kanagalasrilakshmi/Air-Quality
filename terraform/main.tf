@@ -57,9 +57,10 @@ resource "google_composer_environment" "airquality-composer" {
     software_config {
       image_version = "composer-2.9.7-airflow-2.9.3"  # Use a valid image version
       pypi_packages = {
-                           "gs://airquality-mlops-rg/composer_requirements/requirements.txt" = ""
-      } 
+        "gs://airquality-mlops-rg/composer_requirements/requirements.txt" = ""
+      }
       env_variables = {
+        # Your previously defined environment variables
         LOAD_BUCKET_NAME                 = "airquality-mlops-rg"
         FOLDER_PATH                      = "api_data/"
         LOAD_OUTPUT_PICKLE_FILE          = "processed/air_pollution.pkl"
@@ -102,21 +103,22 @@ resource "google_composer_environment" "airquality-composer" {
         TEST_SCHEMA_FILE_PATH           = "processed/train/output_schema.pkl"
         TEST_STATS_FILE_PATH            = "processed/train/output_stats.pkl"
         TEST_DATASET_FILE_PATH          = "processed/train/feature_eng_data.pkl"
+        # SMTP Configuration
        #AIRFLOW__SMTP__SMTP_HOST        = "smtp.gmail.com"
-       # AIRFLOW__SMTP__SMTP_TLS         = "True"
+        #AIRFLOW__SMTP__SMTP_PORT        = "587"
+        #AIRFLOW__SMTP__SMTP_USER        = "your_email@gmail.com"
+        #AIRFLOW__SMTP__SMTP_PASSWORD    = "your_app_password"  # Use an app-specific password
+        #AIRFLOW__SMTP__SMTP_MAIL_FROM   = "your_email@gmail.com"
+        #AIRFLOW__SMTP__SMTP_DEFAULT_SENDER = "your_email@gmail.com"
+        #AIRFLOW__SMTP__SMTP_DEFAULT_RECIPIENT = "recipient@example.com"
+        #AIRFLOW__SMTP__SMTP_TLS         = "True"
         #AIRFLOW__SMTP__SMTP_STARTTLS    = "True"
-       # AIRFLOW__SMTP__SMTP_SSL        = "False"
-        #AIRFLOW__SMTP__SMTP_USER       = "anirudhak881@gmail.com"
-       # AIRFLOW__SMTP__SMTP_PASSWORD   = "ksmhwqrzhjllqsaz"  # Remember to replace with your actual app password
-       # AIRFLOW__SMTP__SMTP_PORT       = "587"
-       # AIRFLOW__SMTP__SMTP_MAIL_FROM  = "anirudhak881@gmail.com"       
-        #AIRFLOW__SMTP__SMTP_DEFAULT_SENDER = "anirudhak881@gmail.com"
-        #AIRFLOW__SMTP__SMTP_DEFAULT_RECIPIENT = "default-recipient@example.com" 
+        #AIRFLOW__SMTP__SMTP_SSL         = "False"
       }
     }
-       
   }
 }
+
 # Optional: Set up the network and subnetwork (if required)
 resource "google_compute_network" "composer_network" {
   name                    = "composer-network"

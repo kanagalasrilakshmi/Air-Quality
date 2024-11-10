@@ -233,7 +233,7 @@ branch_pivot_data_test = BranchPythonOperator(
 
 send_anomaly_alert_handle_missing_vals_test = EmailOperator(
     task_id='send_anomaly_alert_handle_missing_vals_test',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for handling missing values in test',
     html_content="""<p>Anomalies detected in the data pipeline while handling missing values in test. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='handle_missing_vals_test') %}
@@ -247,7 +247,7 @@ send_anomaly_alert_handle_missing_vals_test = EmailOperator(
 
 send_anomaly_alert_handle_missing_vals_train = EmailOperator(
     task_id='send_anomaly_alert_handle_missing_vals_train',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for handling missing values in train',
     html_content="""<p>Anomalies detected in the data pipeline while handling missing values in train. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='handle_missing_vals_train') %}
@@ -261,7 +261,7 @@ send_anomaly_alert_handle_missing_vals_train = EmailOperator(
 
 send_anomaly_removal_data_test = EmailOperator(
     task_id='send_anomaly_alert_remove_cols_test',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for removing columns test',
     html_content="""<p>Anomalies detected in the data pipeline while removing columns test. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='data_remove_cols_test') %}
@@ -276,7 +276,7 @@ send_anomaly_removal_data_test = EmailOperator(
 # removal cols anomalies
 send_anomaly_removal_data_train = EmailOperator(
     task_id='send_anomaly_alert_remove_cols_train',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for removing columns train',
     html_content="""<p>Anomalies detected in the data pipeline removing columns train. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='data_remove_cols_train') %}
@@ -286,11 +286,11 @@ send_anomaly_removal_data_train = EmailOperator(
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
     dag=dag
-)  
+)
 
 send_anomaly_alert = EmailOperator(
     task_id='send_anomaly_alert_api',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for API',
     html_content="""<p>Anomalies detected in the data pipeline while using API. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='download_data_from_api') %}
@@ -308,7 +308,7 @@ send_anomaly_alert = EmailOperator(
 
 send_anomaly_alert_load_data = EmailOperator(
     task_id='send_anomaly_alert_load_data',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for Loading Data',
     html_content="""<p>Anomalies detected in the data pipeline while loading data. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='load_data_pickle') %}
@@ -322,7 +322,7 @@ send_anomaly_alert_load_data = EmailOperator(
 
 send_anomaly_alert_train_test = EmailOperator(
     task_id='send_anomaly_alert_train_test',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for Splitting train Data',
     html_content="""<p>Anomalies detected in the data pipeline while splitting data. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='split_train_test') %}
@@ -336,7 +336,7 @@ send_anomaly_alert_train_test = EmailOperator(
 
 send_anomaly_pivot_data_train = EmailOperator(
     task_id='send_anomaly_pivot_data_train',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for pivoting train Data',
     html_content="""<p>Anomalies detected in the data pipeline while pivotting data. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='pivot_data_train') %}
@@ -350,7 +350,7 @@ send_anomaly_pivot_data_train = EmailOperator(
 
 send_anomaly_alert_anamolies_vals_test= EmailOperator(
     task_id='send_anomaly_alert_anamolies_vals_test',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for detecting outliers and negative values test data',
     html_content="""<p> detecting outliers and negative values. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='anamolies_vals_test') %}
@@ -364,7 +364,7 @@ send_anomaly_alert_anamolies_vals_test= EmailOperator(
 
 send_anomaly_alert_anamolies_vals_train= EmailOperator(
     task_id='send_anomaly_alert_anamolies_vals_train',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for detecting outliers and negative values training data',
     html_content="""<p> detecting outliers and negative values. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='anamolies_vals_train') %}
@@ -378,7 +378,7 @@ send_anomaly_alert_anamolies_vals_train= EmailOperator(
 
 send_anomaly_pivot_data_test = EmailOperator(
     task_id='send_anomaly_pivot_data_test',
-    to='texako7299@opposir.com',
+    to='anirudhak881@gmail.com',
     subject='Data Anomaly Alert for pivoting test Data',
     html_content="""<p>Anomalies detected in the data pipeline while pivotting data. Details:</p>
                     {% set anomalies = ti.xcom_pull(task_ids='pivot_data_test') %}
@@ -456,7 +456,7 @@ data_Loader = PythonOperator(
 data_Bias = PythonOperator(
     task_id='bias_detection_and_mitigation',
     python_callable=data_biasing,
-
+    
     dag=dag)
 
 # split data into traning and testing
