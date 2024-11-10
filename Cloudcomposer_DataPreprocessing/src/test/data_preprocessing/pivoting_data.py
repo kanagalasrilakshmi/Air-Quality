@@ -1,7 +1,9 @@
 import pandas as pd
+import numpy as np
 import os
 import logging
 from google.cloud import storage
+import io  # For handling byte streams
 
 # Configure logging for anomaly detection
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -26,7 +28,7 @@ class DataProcessor:
             return ["File does not exist"]
         
         # Load the data
-        self.data = pd.read_pickle(blob.download_as_bytes())
+        self.data = pd.read_pickle(io.BytesIO(blob.download_as_bytes()))  # Use BytesIO to handle byte data
         logger.info(f"Data loaded from {self.file_path}")
         return []
 
@@ -83,8 +85,11 @@ class DataProcessor:
             bucket = storage_client.bucket(self.bucket_name)
             blob = bucket.blob(output_path)
 
-            # Save pivoted data to GCS
-            blob.upload_from_string(self.pivoted_data.to_pickle(), content_type='application/octet-stream')
+            # Save pivoted data to GCS using BytesIO
+            with io.BytesIO() as output:
+                self.pivoted_data.to_pickle(output)
+                output.seek(0)  # Go to the beginning of the byte stream
+                blob.upload_from_file(output, content_type='application/octet-stream')  # Upload byte stream
             logger.info(f"Pivoted DataFrame saved as '{output_path}'.")
             return []
         else:
@@ -93,9 +98,12 @@ class DataProcessor:
 
 def pivot_parameters():
     # Load environment variables for bucket names and file paths
+
     bucket_name = os.environ.get("DATA_BUCKET_NAME")
     file_path = os.environ.get("TEST_DATA_PIVOT_INPUT")
-    output_pickle_file = os.environ.get("TEST_DATA_PIVOT_OUTPUTT")
+    output_pickle_file = os.environ.get("TEST_DATA_PIVOT_OUTPUT")
+
+
 
     processor = DataProcessor(bucket_name, file_path)
     
