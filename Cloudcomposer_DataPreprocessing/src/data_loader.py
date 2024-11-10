@@ -2,7 +2,6 @@ import pandas as pd
 import os
 import logging
 from google.cloud import storage
-from io import BytesIO
 
 # Configure logging for anomaly detection
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -18,30 +17,28 @@ class CSVStacker:
 
     def load_csv_files(self):
         blobs = self.storage_client.list_blobs(self.bucket_name, prefix=self.folder_path)
-        csv_files = [blob for blob in blobs if blob.name.endswith('.csv')]
+        csv_files = [blob.name for blob in blobs if blob.name.endswith('.csv')]
         
         if not csv_files:
-            logger.warning(f"No CSV files found in bucket '{self.bucket_name}' with prefix '{self.folder_path}'.")
+            logger.warning(f"No CSV files found in '{self.folder_path}'.")
             return ["No CSV files found"]
 
         anomalies = []
-        for blob in csv_files:
+        for blob_name in csv_files:
+            blob = self.storage_client.bucket(self.bucket_name).blob(blob_name)
             if blob.size == 0:
-                anomaly = f"File '{blob.name}' is empty and was skipped."
+                anomaly = f"File '{blob_name}' is empty and was skipped."
                 logger.warning(anomaly)
                 anomalies.append(anomaly)
                 continue
 
-            # Load the CSV file into a DataFrame
-            data = blob.download_as_bytes()
-            df = pd.read_csv(BytesIO(data))
+            df = pd.read_csv(blob.open("rb"))
             self.dataframes.append(df)
-            logger.info(f"Loaded file '{blob.name}' successfully.")
+            logger.info(f"Loaded file '{blob_name}' successfully.")
         
         if not self.dataframes:
             anomalies.append("No valid data files were loaded.")
             logger.error("No valid data files were loaded.")
-        
         return anomalies
 
     def detect_column_consistency(self):
@@ -91,15 +88,14 @@ class CSVStacker:
             logger.error(anomaly)
             return [anomaly]
         
-        self.stacked_df.to_pickle(output_path)
-        logger.info(f"Stacked DataFrame saved as '{output_path}'.")
+        # Save to GCS
+        self.stacked_df.to_pickle("/tmp/stacked_data.pkl")  # Save temporarily in the Cloud Function environment
+        blob = self.storage_client.bucket(self.bucket_name).blob(output_path)
+        blob.upload_from_filename("/tmp/stacked_data.pkl")
+        logger.info(f"Stacked DataFrame saved as '{output_path}' in bucket '{self.bucket_name}'.")
         return []
 
-def stack_csvs_to_pickle():
-    bucket_name = os.getenv("GCS_BUCKET_NAME")  # Set your GCS bucket name here
-    folder_path = os.getenv("GCS_FOLDER_PATH")  # Set your folder path here
-    output_pickle_file = os.getenv("GCS_OUTPUT_PICKLE_FILE")  # Set your output pickle file path
-
+def stack_csvs_to_pickle(bucket_name, folder_path, output_pickle_file):
     csv_stacker = CSVStacker(bucket_name, folder_path)
     anomalies = []
 
@@ -123,7 +119,10 @@ def stack_csvs_to_pickle():
     return anomalies  # Return list of all detected anomalies
 
 if __name__ == "__main__":
-    detected_anomalies = stack_csvs_to_pickle()
+    bucket_name = os.environ.get('LOAD_BUCKET_NAME')
+    folder_path = os.environ.get('FOLDER_PATH')
+    output_pickle_file = os.environ.get('LOAD_OUTPUT_PICKLE_FILE')
+    detected_anomalies = stack_csvs_to_pickle(bucket_name, folder_path, output_pickle_file)
     if detected_anomalies:
         logger.error(f"Detected Anomalies: {detected_anomalies}")
     else:
