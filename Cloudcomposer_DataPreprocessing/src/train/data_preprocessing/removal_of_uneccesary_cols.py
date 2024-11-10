@@ -108,13 +108,14 @@ def remove_uneccesary_cols():
     anomalies.extend(cleaner.load_data())
 
     # Step 2: Drop unnecessary columns
-    anomalies.extend(cleaner.drop_columns(columns_to_drop))
+    # anomalies.extend(cleaner.drop_columns(columns_to_drop))
 
     # Step 3: Set 'date' column as index
     anomalies.extend(cleaner.set_date_index())
 
     # Step 4: Save the cleaned DataFrame
     if not anomalies:
+        anomalies.extend(cleaner.drop_columns(columns_to_drop))
         anomalies.extend(cleaner.save_as_pickle(output_pickle_file))
         logger.info("Data cleaning process completed successfully.")
     else:
