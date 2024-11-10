@@ -80,8 +80,8 @@ class DataProcessor:
 
 def handle_missing_vals():
     # Paths for input and output pickle files
-    file_path = os.environ.get("TRAIN_DATA_INPUT_FILE_PATH")
-    output_pickle_file = os.environ.get("TRAIN_DATA_OUTPUT_FILE_PATH")
+    file_path = os.environ.get("TEST_DATA_MISS_VAL_INPUT")
+    output_pickle_file = os.environ.get("TEST_DATA_MISS_VAL_OUTPUT")
     processor = DataProcessor(file_path)
     
     anomalies = []

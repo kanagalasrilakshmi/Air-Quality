@@ -100,8 +100,8 @@ class DataCleaner:
 
 def anamoly_detection_val():
     # Path to the input pickle file and output pickle file
-    file_path = os.environ.get("TRAIN_DATA_INPUT_FILE_PATH")
-    output_pickle_file = os.environ.get("TRAIN_DATA_OUTPUT_FILE_PATH")
+    file_path = os.environ.get("TEST_DATA_ANMLY_INPUT")
+    output_pickle_file = os.environ.get("TEST_DATA_ANMLY_OUTPUT")
     
     cleaner = DataCleaner(file_path)
     cleaner.load_data()

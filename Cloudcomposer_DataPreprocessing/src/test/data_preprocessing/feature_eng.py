@@ -108,8 +108,8 @@ class DataFeatureEngineer:
 
 def feature_engineering():
     # Path to the input pickle file and output pickle file
-    file_path = os.environ.get("TRAIN_DATA_INPUT_FILE_PATH")
-    output_pickle_file = os.environ.get("TRAIN_DATA_OUTPUT_FILE_PATH")
+    file_path = os.environ.get("TEST_DATA_FEA_ENG_INPUT")
+    output_pickle_file = os.environ.get("TEST_DATA_FEA_ENG_OUTPUT")
 
     engineer = DataFeatureEngineer(file_path)
     engineer.load_data()
