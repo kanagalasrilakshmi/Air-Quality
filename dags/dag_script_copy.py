@@ -269,6 +269,7 @@ send_anomaly_alert_handle_missing_vals_test = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -283,6 +284,7 @@ send_anomaly_alert_handle_missing_vals_train = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -297,6 +299,7 @@ send_anomaly_removal_data_test = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -312,6 +315,7 @@ send_anomaly_removal_data_train = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )  
 
@@ -330,6 +334,7 @@ send_anomaly_alert = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -344,6 +349,7 @@ send_anomaly_alert_load_data = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -358,6 +364,7 @@ send_anomaly_alert_train_test = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -372,6 +379,7 @@ send_anomaly_pivot_data_train = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -386,6 +394,7 @@ send_anomaly_alert_anamolies_vals_test= EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -400,6 +409,7 @@ send_anomaly_alert_anamolies_vals_train= EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
@@ -414,6 +424,7 @@ send_anomaly_pivot_data_test = EmailOperator(
                     {% else %}
                         <p>No specific anomaly details available.</p>
                     {% endif %}""",
+    conn_id='gmail_smtp',
     dag=dag
 )
 
