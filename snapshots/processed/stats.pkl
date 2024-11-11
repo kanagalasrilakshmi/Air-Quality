@@ -1,0 +1,106 @@
+{
+    "date": {
+        "mean": null,
+        "std_dev": null,
+        "min": "2022-01-01T01:00:00+00:00",
+        "max": "2023-12-31T23:00:00+00:00",
+        "missing_values": 0,
+        "unique_values": 14669
+    },
+    "location": {
+        "mean": null,
+        "std_dev": null,
+        "min": "V_VIEW",
+        "max": "V_VIEW",
+        "missing_values": 0,
+        "unique_values": 1
+    },
+    "parameter": {
+        "mean": null,
+        "std_dev": null,
+        "min": "pm25",
+        "max": "pm25",
+        "missing_values": 0,
+        "unique_values": 1
+    },
+    "value": {
+        "mean": 6.534701353532845,
+        "std_dev": 4.309656567969317,
+        "min": 0.0,
+        "max": 103.8,
+        "missing_values": 0,
+        "unique_values": 308
+    },
+    "unit": {
+        "mean": null,
+        "std_dev": null,
+        "min": "\u00b5g/m\u00b3",
+        "max": "\u00b5g/m\u00b3",
+        "missing_values": 0,
+        "unique_values": 1
+    },
+    "latitude": {
+        "mean": 26.07319999999999,
+        "std_dev": 1.0658471926671414e-14,
+        "min": 26.0732,
+        "max": 26.0732,
+        "missing_values": 0,
+        "unique_values": 1
+    },
+    "longitude": {
+        "mean": -80.33860000000001,
+        "std_dev": 1.421129590222855e-14,
+        "min": -80.3386,
+        "max": -80.3386,
+        "missing_values": 0,
+        "unique_values": 1
+    },
+    "city": {
+        "mean": NaN,
+        "std_dev": NaN,
+        "min": NaN,
+        "max": NaN,
+        "missing_values": 16106,
+        "unique_values": 1
+    },
+    "country": {
+        "mean": null,
+        "std_dev": null,
+        "min": "US",
+        "max": "US",
+        "missing_values": 0,
+        "unique_values": 1
+    },
+    "hour": {
+        "mean": 11.447535080094374,
+        "std_dev": 6.937285780801658,
+        "min": 0,
+        "max": 23,
+        "missing_values": 0,
+        "unique_values": 24
+    },
+    "day_of_week": {
+        "mean": null,
+        "std_dev": null,
+        "min": "Friday",
+        "max": "Wednesday",
+        "missing_values": 0,
+        "unique_values": 7
+    },
+    "month": {
+        "mean": 6.506270954923631,
+        "std_dev": 3.4232061080172547,
+        "min": 1,
+        "max": 12,
+        "missing_values": 0,
+        "unique_values": 12
+    },
+    "season": {
+        "mean": null,
+        "std_dev": null,
+        "min": "Fall",
+        "max": "Winter",
+        "missing_values": 0,
+        "unique_values": 4
+    }
+}
