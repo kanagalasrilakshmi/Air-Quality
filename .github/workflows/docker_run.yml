@@ -36,23 +36,24 @@ jobs:
           EMAIL_PASSWORD: "ksmhwqrzhjllqsaz"  # Replace with actual app password
           RECIPIENT_EMAIL: "anirudhak881@gmail.com"
         run: |
-          python Training/Prophet.py && \
-          (echo 'Subject: GitHub Actions - Training/Prophet.py Succeeded' > email.txt && \
-          echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
-          echo 'Training/Prophet.py has completed successfully.' >> email.txt && \
-          curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
-            --mail-from '$EMAIL_USERNAME' \
-            --mail-rcpt '$RECIPIENT_EMAIL' \
-            --upload-file email.txt \
-            --user '$EMAIL_USERNAME:$EMAIL_PASSWORD') || \
-          (echo 'Subject: GitHub Actions - Training/Prophet.py Failed' > email.txt && \
-          echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
-          echo 'Training/Prophet.py has failed.' >> email.txt && \
-          curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
-            --mail-from '$EMAIL_USERNAME' \
-            --mail-rcpt '$RECIPIENT_EMAIL' \
-            --upload-file email.txt \
-            --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && exit 1) && \
+          docker run --name my_model_container my_model_pipeline sh -c "
+            python /app/Training/Prophet.py && \
+            (echo 'Subject: GitHub Actions - Training/Prophet.py Succeeded' > email.txt && \
+            echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
+            echo 'Training/Prophet.py has completed successfully.' >> email.txt && \
+            curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
+              --mail-from '$EMAIL_USERNAME' \
+              --mail-rcpt '$RECIPIENT_EMAIL' \
+              --upload-file email.txt \
+              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD') || \
+            (echo 'Subject: GitHub Actions - Training/Prophet.py Failed' > email.txt && \
+            echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
+            echo 'Training/Prophet.py has failed.' >> email.txt && \
+            curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
+              --mail-from '$EMAIL_USERNAME' \
+              --mail-rcpt '$RECIPIENT_EMAIL' \
+              --upload-file email.txt \
+              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && exit 1) && \
 
             python Validation/Prophet.py || \
             (echo 'Subject: GitHub Actions - Validation/Prophet.py Failed' > email.txt && \
