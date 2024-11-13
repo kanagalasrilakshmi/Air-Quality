@@ -137,6 +137,7 @@ class ProphetPM25Model:
 # Main function to orchestrate the workflow
 def main():
     mlflow.set_experiment("PM2.5 Prophet")
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:///app/mlruns"))
     curr_dir = os.getcwd()
     print(curr_dir)
     data_prepocessing_path_pkl = os.path.join(curr_dir,'DataPreprocessing/src/data_store_pkl_files')

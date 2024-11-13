@@ -279,9 +279,9 @@ import pandas as pd
 import pickle
 import numpy as np
 import xgboost as xgb
-from dags.ModelDevelopment.Validation.XGBoost import XGBoostPM25Model
-from dags.ModelDevelopment.Validation.Prophet import ProphetPM25Model
-from dags.ModelDevelopment.Validation.RandomForest import RandomForestPM25Model
+from Validation.XGBoost import XGBoostPM25Model
+from Validation.Prophet import ProphetPM25Model
+from Validation.RandomForest import RandomForestPM25Model
 
 # Model Loading Functions
 def load_randomforest_model(filepath):
@@ -307,6 +307,7 @@ def load_prophet_model(filepath):
 
 # Function to Identify Best Model
 def find_best_model_run(experiment_name):
+    print(experiment_name)
     """Finds the best model run in an experiment based on the lowest RMSE metric."""
     experiment = mlflow.get_experiment_by_name(experiment_name)
     if experiment is None:
@@ -497,15 +498,15 @@ def main():
     best_model, best_combined_score = select_best_model(rmse_results, bias_results, metric_weights)
     if best_model == "Prophet":
         curr_dir = os.getcwd()
-        directory_weights_path = os.path.join(curr_dir,"dags/weights/prophet_pm25_model.pth")
+        directory_weights_path = os.path.join(curr_dir,"weights/prophet_pm25_model.pth")
         model = load_prophet_model(directory_weights_path)
     if best_model == "Random":
         curr_dir = os.getcwd()
-        directory_weights_path = os.path.join(curr_dir,"dags/weights/randomforest_pm25_model.pth")
+        directory_weights_path = os.path.join(curr_dir,"weights/randomforest_pm25_model.pth")
         model = load_randomforest_model(directory_weights_path)
     if best_model == "XGBoost":
         curr_dir = os.getcwd()
-        directory_weights_path = os.path.join(curr_dir,"dags/weights/xgboost_pm25_model.pth")
+        directory_weights_path = os.path.join(curr_dir,"weights/xgboost_pm25_model.pth")
         model = load_xgboost_model(directory_weights_path)
     print(best_model)
     print(best_combined_score)

@@ -154,7 +154,7 @@ def main():
     curr_dir = os.getcwd()
     data_prepocessing_path_pkl = os.path.join(curr_dir,'DataPreprocessing/src/data_store_pkl_files')
     sys.path.append(data_prepocessing_path_pkl)
-    from dags.DataPreprocessing.src.test.data_preprocessing.feature_eng import DataFeatureEngineer
+    from DataPreprocessing.src.test.data_preprocessing.feature_eng import DataFeatureEngineer
     # Step 1: Load Data using DataFeatureEngineer
     file_path = os.path.join(data_prepocessing_path_pkl, 'test_data/no_anamoly_test_data.pkl')
     # Initialize DataFeatureEngineer to preprocess the data and fetch the lambda value
@@ -168,7 +168,7 @@ def main():
     # Step 2: Define file paths
     train_file = os.path.join(data_prepocessing_path_pkl, 'train_data/feature_eng_train_data.pkl')
     test_file = os.path.join(data_prepocessing_path_pkl, 'test_data/feature_eng_test_data.pkl')
-    model_save_path = os.path.join(curr_dir, 'dags/weights/xgboost_pm25_model.pth')
+    model_save_path = os.path.join(curr_dir, 'weights/xgboost_pm25_model.pth')
 
     if mlflow.active_run():
         mlflow.end_run()

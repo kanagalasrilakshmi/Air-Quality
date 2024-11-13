@@ -69,7 +69,7 @@ class ProphetPM25Model:
         #     python_model=wrapped_model,
         #     input_example=self.df_train.head(1)
         # )
-        mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
+        # mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
         print(mlflow.get_tracking_uri())
         mlflow.pyfunc.log_model(artifact_path="prophet_pm25_model", python_model= wrapped_model,input_example=self.df_train.head(1))
 
@@ -78,7 +78,7 @@ class ProphetPM25Model:
     def save_weights(self):
         with open(self.model_save_path, 'wb') as f:
             pickle.dump(self.model, f)
-        mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
+        # mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
         mlflow.log_artifact(self.model_save_path)
         print(f"Model saved at {self.model_save_path}")
 
@@ -94,9 +94,8 @@ def main():
     # mlflow.set_tracking_uri(f"file://{mlruns_dir}")
 
     #mlflow.set_tracking_uri("./mlruns")
-    print(os.environ["MLFLOW_TRACKING_URI"])
     # mlruns_path = os.path.join(os.getcwd(), "mlruns")
-    mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:///app/mlruns"))
     mlflow.set_experiment("PM2.5 Prophet")
 
 
