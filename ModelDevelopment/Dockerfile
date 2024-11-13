@@ -16,6 +16,8 @@ ENV MLFLOW_TRACKING_URI="file:///app/mlruns"
 
 ENV PYTHONPATH="/app/ModelDevelopment:${PYTHONPATH}"
 
+RUN mkdir -p /app/weights
+
 # Add execute permissions for all Python scripts in Training and Validation folders
 RUN chmod +x Training/*.py Validation/*.py
 
