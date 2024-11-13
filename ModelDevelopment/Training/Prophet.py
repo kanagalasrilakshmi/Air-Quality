@@ -58,6 +58,19 @@ class ProphetPM25Model:
         # Train the Prophet model
         self.model.fit(self.df_train)
         wrapped_model = ProphetWrapper(self.model)
+
+
+        # local_artifact_path = os.path.join(os.getcwd(), "mlruns", "prophet_pm25_model")
+        # os.makedirs(local_artifact_path, exist_ok=True)
+        
+        # Log the model using the local path
+        # mlflow.pyfunc.log_model(
+        #     artifact_path=local_artifact_path,
+        #     python_model=wrapped_model,
+        #     input_example=self.df_train.head(1)
+        # )
+        mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
+        print(mlflow.get_tracking_uri())
         mlflow.pyfunc.log_model(artifact_path="prophet_pm25_model", python_model= wrapped_model,input_example=self.df_train.head(1))
 
     
@@ -65,12 +78,29 @@ class ProphetPM25Model:
     def save_weights(self):
         with open(self.model_save_path, 'wb') as f:
             pickle.dump(self.model, f)
+        mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
         mlflow.log_artifact(self.model_save_path)
         print(f"Model saved at {self.model_save_path}")
 
 # Main function to orchestrate the workflow
 def main():
+
+    # os.environ["MLFLOW_TRACKING_URI"] = f"file://{os.path.join(os.getcwd(), 'mlruns')}"
+    # os.environ["MLFLOW_ARTIFACT_URI"] = os.path.join(os.getcwd(), "mlruns")
+    # os.environ["HOME"] = os.getcwd() 
+    # mlruns_dir = os.path.join(os.getcwd(), "mlruns")
+    # if not os.path.exists(mlruns_dir):
+    #     os.makedirs(mlruns_dir)
+    # mlflow.set_tracking_uri(f"file://{mlruns_dir}")
+
+    #mlflow.set_tracking_uri("./mlruns")
+    print(os.environ["MLFLOW_TRACKING_URI"])
+    # mlruns_path = os.path.join(os.getcwd(), "mlruns")
+    mlflow.set_tracking_uri(os.environ["MLFLOW_TRACKING_URI"])
     mlflow.set_experiment("PM2.5 Prophet")
+
+
+    
     curr_dir = os.getcwd()
     print(curr_dir)
     data_prepocessing_path_pkl = os.path.join(curr_dir,'DataPreprocessing/src/data_store_pkl_files')
