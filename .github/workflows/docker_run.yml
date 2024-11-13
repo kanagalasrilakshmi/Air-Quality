@@ -58,6 +58,58 @@ jobs:
               --upload-file email.txt \
               --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && \
 
+            python Training/RandomForest.py && \
+            echo 'Subject: GitHub Actions - Training/RandomForest.py Completed' > email.txt && \
+            echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
+            echo 'Training/RandomForest.py has completed successfully.' >> email.txt && \
+            curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
+              --mail-from '$EMAIL_USERNAME' \
+              --mail-rcpt '$RECIPIENT_EMAIL' \
+              --upload-file email.txt \
+              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && \
+
+            python Validation/RandomForest.py && \
+            echo 'Subject: GitHub Actions - Validation/RandomForest.py Completed' > email.txt && \
+            echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
+            echo 'Validation/RandomForest.py has completed successfully.' >> email.txt && \
+            curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
+              --mail-from '$EMAIL_USERNAME' \
+              --mail-rcpt '$RECIPIENT_EMAIL' \
+              --upload-file email.txt \
+              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && \
+            
+
+            python Training/XGBoost.py && \
+            echo 'Subject: GitHub Actions - Training/XGBoost.py Completed' > email.txt && \
+            echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
+            echo 'Training/XGBoost.py has completed successfully.' >> email.txt && \
+            curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
+              --mail-from '$EMAIL_USERNAME' \
+              --mail-rcpt '$RECIPIENT_EMAIL' \
+              --upload-file email.txt \
+              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && \
+
+            python Validation/XGBoost.py && \
+            echo 'Subject: GitHub Actions - Validation/XGBoost.py Completed' > email.txt && \
+            echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
+            echo 'Validation/XGBoost.py has completed successfully.' >> email.txt && \
+            curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
+              --mail-from '$EMAIL_USERNAME' \
+              --mail-rcpt '$RECIPIENT_EMAIL' \
+              --upload-file email.txt \
+              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && \
+
+
+            python ModelBias/Model_bias.py && \
+            echo 'Subject: GitHub Actions - ModelBias/Model_bias.py Completed' > email.txt && \
+            echo 'To: $RECIPIENT_EMAIL' >> email.txt && \
+            echo 'ModelBias/Model_bias.py has completed successfully.' >> email.txt && \
+            curl --url 'smtp://$SMTP_SERVER:$SMTP_PORT' --ssl-reqd \
+              --mail-from '$EMAIL_USERNAME' \
+              --mail-rcpt '$RECIPIENT_EMAIL' \
+              --upload-file email.txt \
+              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD'
+            
             python bestmodel.py && \
             echo 'Subject: GitHub Actions - bestmodel.py Completed' > email.txt && \
             echo 'To: $RECIPIENT_EMAIL' >> email.txt && \

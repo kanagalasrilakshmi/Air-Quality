@@ -481,12 +481,51 @@ def select_best_model(rmse_results, bias_results, metric_weights):
 
 
 
-# Entry Point Function
+# # Entry Point Function
+# def main():
+#     experiment_names = ["PM2.5 Random Forest", "PM2.5 XGBoost Prediction", "PM2.5 Prophet"]
+#     experiment_names_2 = ["Random Forest Bias Evaluation", "XGBoost Bias Evaluation", "Prophet Bias Evaluation"]
+#     model, best_rmse, best_experiment_name, best_run_id, rmse_results= get_best_model_and_load_weights(experiment_names)
+#     bias_results = get_bias_results(experiment_names_2)
+#     # Define weights for each metric - adjust these based on importance
+#     metric_weights = {
+#         "RMSE": 0.5,        # Overall importance of RMSE
+#         "MAE": 0.2,         # Mean Absolute Error weight
+#         "R2": 0.2,          # R-squared weight
+#         "MBE": 0.1          # Mean Bias Error weight
+#     }
+#     # Run the selection function
+#     best_model, best_combined_score = select_best_model(rmse_results, bias_results, metric_weights)
+#     if best_model == "Prophet":
+#         curr_dir = os.getcwd()
+#         directory_weights_path = os.path.join(curr_dir,"weights/prophet_pm25_model.pth")
+#         model = load_prophet_model(directory_weights_path)
+#     if best_model == "Random":
+#         curr_dir = os.getcwd()
+#         directory_weights_path = os.path.join(curr_dir,"weights/randomforest_pm25_model.pth")
+#         model = load_randomforest_model(directory_weights_path)
+#     if best_model == "XGBoost":
+#         curr_dir = os.getcwd()
+#         directory_weights_path = os.path.join(curr_dir,"weights/xgboost_pm25_model.pth")
+#         model = load_xgboost_model(directory_weights_path)
+#     print(best_model)
+#     print(best_combined_score)
+#     print(bias_results)
+#     print(rmse_results)
+#     if model:
+#         print(f"Best Experiment: {best_experiment_name}")
+#         print(f"Best Run ID: {best_run_id}")
+#         print(f"Best RMSE: {best_rmse}")
+#     else:
+#         print("No model could be loaded.")
+
+
 def main():
     experiment_names = ["PM2.5 Random Forest", "PM2.5 XGBoost Prediction", "PM2.5 Prophet"]
     experiment_names_2 = ["Random Forest Bias Evaluation", "XGBoost Bias Evaluation", "Prophet Bias Evaluation"]
-    model, best_rmse, best_experiment_name, best_run_id, rmse_results= get_best_model_and_load_weights(experiment_names)
+    model, best_rmse, best_experiment_name, best_run_id, rmse_results = get_best_model_and_load_weights(experiment_names)
     bias_results = get_bias_results(experiment_names_2)
+    
     # Define weights for each metric - adjust these based on importance
     metric_weights = {
         "RMSE": 0.5,        # Overall importance of RMSE
@@ -495,29 +534,52 @@ def main():
         "MBE": 0.1          # Mean Bias Error weight
     }
     # Run the selection function
-    best_model, best_combined_score = select_best_model(rmse_results, bias_results, metric_weights)
-    if best_model == "Prophet":
+    best_model_name, best_combined_score = select_best_model(rmse_results, bias_results, metric_weights)
+    if best_model_name == "Prophet":
         curr_dir = os.getcwd()
-        directory_weights_path = os.path.join(curr_dir,"weights/prophet_pm25_model.pth")
+        directory_weights_path = os.path.join(curr_dir, "weights/prophet_pm25_model.pth")
         model = load_prophet_model(directory_weights_path)
-    if best_model == "Random":
+    elif best_model_name == "Random":
         curr_dir = os.getcwd()
-        directory_weights_path = os.path.join(curr_dir,"weights/randomforest_pm25_model.pth")
+        directory_weights_path = os.path.join(curr_dir, "weights/randomforest_pm25_model.pth")
         model = load_randomforest_model(directory_weights_path)
-    if best_model == "XGBoost":
+    elif best_model_name == "XGBoost":
         curr_dir = os.getcwd()
-        directory_weights_path = os.path.join(curr_dir,"weights/xgboost_pm25_model.pth")
+        directory_weights_path = os.path.join(curr_dir, "weights/xgboost_pm25_model.pth")
         model = load_xgboost_model(directory_weights_path)
-    print(best_model)
+    else:
+        print("No valid model found.")
+        return
+
+    # Log and register the best model in MLflow
+    with mlflow.start_run(run_id=best_run_id) as run:
+        mlflow.log_param("best_combined_score", best_combined_score)
+        
+        # Log the best model and push to the MLflow registry
+        if best_model_name == "Prophet":
+            model_name = "PM2.5_Prophet_Model"
+        elif best_model_name == "Random":
+            model_name = "PM2.5_RandomForest_Model"
+        elif best_model_name == "XGBoost":
+            model_name = "PM2.5_XGBoost_Model"
+        
+        # Log the model to MLflow
+        mlflow.pyfunc.log_model(
+            artifact_path="model",
+            python_model=model,
+            registered_model_name=model_name
+        )
+        print(f"Best model '{model_name}' registered with MLflow Model Registry.")
+
+    print(f"\nBest model selected: {best_model_name} with combined score: {best_combined_score}")
+    print(best_model_name)
     print(best_combined_score)
     print(bias_results)
     print(rmse_results)
-    if model:
-        print(f"Best Experiment: {best_experiment_name}")
-        print(f"Best Run ID: {best_run_id}")
-        print(f"Best RMSE: {best_rmse}")
-    else:
-        print("No model could be loaded.")
+
+if __name__ == "__main__":
+    main()
+
 
 if __name__ == "__main__":
     main()
