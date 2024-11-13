@@ -21,7 +21,7 @@ RUN mkdir -p /app/weights
 RUN mkdir -p /app/artifacts
 
 # Add execute permissions for all Python scripts in Training and Validation folders
-RUN chmod +x Training/*.py Validation/*.py
+RUN chmod +x Training/*.py Validation/*.py ModelBias/*.py
 
 # Run scripts in sequence with 'python' in front of each
-CMD ["sh", "-c", "python Training/Prophet.py && python Validation/Prophet.py && python bestmodel.py"]
+CMD ["sh", "-c", "python Training/Prophet.py && python Validation/Prophet.py && python ModelBias/Model_bias.py && python bestmodel.py"]

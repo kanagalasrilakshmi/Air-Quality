@@ -103,7 +103,7 @@ class RandomForestPM25Model:
         
         # Plot SHAP summary plot and save it as an artifact
         shap.summary_plot(shap_values, self.X_test, show=False)
-        shap_plot_path = os.path.join(os.getcwd(), 'dags/artifacts/shap_summary_plot_randomforest.png')
+        shap_plot_path = os.path.join(os.getcwd(), 'artifacts/shap_summary_plot_randomforest.png')
         plt.savefig(shap_plot_path)
         mlflow.log_artifact(shap_plot_path)
         print(f"SHAP summary plot saved at {shap_plot_path}")
