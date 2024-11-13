@@ -1,0 +1,138 @@
+{
+    "pm25": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "pm25_boxcox": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "lag_1": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "lag_2": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "lag_3": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "lag_4": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "lag_5": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "rolling_mean_3": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "rolling_mean_6": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "rolling_mean_24": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "rolling_std_3": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "rolling_std_6": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "rolling_std_24": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "ema_3": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "ema_6": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "ema_24": {
+        "type": "float64",
+        "required": 1,
+        "sign": "positive"
+    },
+    "diff_1": {
+        "type": "float64",
+        "required": 1
+    },
+    "diff_2": {
+        "type": "float64",
+        "required": 1
+    },
+    "hour": {
+        "type": "int32",
+        "required": 1,
+        "min": 0,
+        "max": 23
+    },
+    "day_of_week": {
+        "type": "int32",
+        "required": 1,
+        "min": 0,
+        "max": 6
+    },
+    "day_of_year": {
+        "type": "int32",
+        "required": 1,
+        "min": 1,
+        "max": 365
+    },
+    "month": {
+        "type": "int32",
+        "required": 1,
+        "min": 1,
+        "max": 12
+    },
+    "sin_hour": {
+        "type": "float64",
+        "required": 1,
+        "min": -1.0,
+        "max": 1.0
+    },
+    "cos_hour": {
+        "type": "float64",
+        "required": 1,
+        "min": -1.0,
+        "max": 1.0
+    },
+    "sin_day_of_week": {
+        "type": "float64",
+        "required": 1,
+        "min": -1.0,
+        "max": 1.0
+    },
+    "cos_day_of_week": {
+        "type": "float64",
+        "required": 1,
+        "min": -1.0,
+        "max": 1.0
+    }
+}
