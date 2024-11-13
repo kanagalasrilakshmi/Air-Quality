@@ -179,7 +179,7 @@ jobs:
               --mail-from '$EMAIL_USERNAME' \
               --mail-rcpt '$RECIPIENT_EMAIL' \
               --upload-file email.txt \
-              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && exit 1) && \
+              --user '$EMAIL_USERNAME:$EMAIL_PASSWORD' && exit 1)
           "
 
       # Step 5: Cleanup - Stop and remove the container after all scripts complete
