@@ -282,6 +282,16 @@ import xgboost as xgb
 from Validation.XGBoost import XGBoostPM25Model
 from Validation.Prophet import ProphetPM25Model
 from Validation.RandomForest import RandomForestPM25Model
+from mlflow.pyfunc import PythonModel
+
+class PM25ModelWrapper(PythonModel):
+    def __init__(self, model):
+        self.model = model  # Your pre-trained model
+
+    def predict(self, context, model_input):
+        # Adjust based on how your model expects input and outputs predictions
+        return self.model.predict(model_input)
+
 
 # Model Loading Functions
 def load_randomforest_model(filepath):
@@ -525,6 +535,7 @@ def main():
     experiment_names_2 = ["Random Forest Bias Evaluation", "XGBoost Bias Evaluation", "Prophet Bias Evaluation"]
     model, best_rmse, best_experiment_name, best_run_id, rmse_results = get_best_model_and_load_weights(experiment_names)
     bias_results = get_bias_results(experiment_names_2)
+    wrapped_model = PM25ModelWrapper(model)
     
     # Define weights for each metric - adjust these based on importance
     metric_weights = {
@@ -566,7 +577,7 @@ def main():
         # Log the model to MLflow
         mlflow.pyfunc.log_model(
             artifact_path="model",
-            python_model=model,
+            python_model=wrapped_model,
             registered_model_name=model_name
         )
         print(f"Best model '{model_name}' registered with MLflow Model Registry.")
