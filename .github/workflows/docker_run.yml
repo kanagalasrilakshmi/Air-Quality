@@ -1,6 +1,6 @@
 name: Run Docker on Push or Pull Request
 
-# Trigger the workflow on push or pull request to the main branch (or specify other branches as needed)
+# Trigger the workflow on push or pull request to the model_local branch
 on:
   push:
     branches:
@@ -27,7 +27,49 @@ jobs:
         run: |
           docker build -t my_model_pipeline -f ModelDevelopment/Dockerfile ModelDevelopment
 
-      # Step 4: Run the Docker container
-      - name: Run Docker container
+      # Step 4: Run all scripts in a single Docker container and send notifications
+      - name: Run scripts and send notifications
+        env:
+          SMTP_SERVER: "smtp.gmail.com"
+          SMTP_PORT: "587"
+          EMAIL_USERNAME: "anirudhak881@gmail.com"
+          EMAIL_PASSWORD: "ksmhwqrzhjllqsaz"  # Make sure this is secure
+          RECIPIENT_EMAIL: "anirudhak881@gmail.com"
         run: |
-          docker run my_model_pipeline
+          # Run Training/Prophet.py
+          docker run -d --name my_model_container my_model_pipeline python Training/Prophet.py
+          docker wait my_model_container
+          echo "Subject: GitHub Actions - Training/Prophet.py Completed" > email.txt
+          echo "To: $RECIPIENT_EMAIL" >> email.txt
+          echo "Training/Prophet.py has completed successfully." >> email.txt
+          curl --url "smtp://$SMTP_SERVER:$SMTP_PORT" --ssl-reqd \
+               --mail-from "$EMAIL_USERNAME" \
+               --mail-rcpt "$RECIPIENT_EMAIL" \
+               --upload-file email.txt \
+               --user "$EMAIL_USERNAME:$EMAIL_PASSWORD"
+
+          # Run Validation/Prophet.py in the same container
+          docker exec my_model_container python Validation/Prophet.py
+          echo "Subject: GitHub Actions - Validation/Prophet.py Completed" > email.txt
+          echo "To: $RECIPIENT_EMAIL" >> email.txt
+          echo "Validation/Prophet.py has completed successfully." >> email.txt
+          curl --url "smtp://$SMTP_SERVER:$SMTP_PORT" --ssl-reqd \
+               --mail-from "$EMAIL_USERNAME" \
+               --mail-rcpt "$RECIPIENT_EMAIL" \
+               --upload-file email.txt \
+               --user "$EMAIL_USERNAME:$EMAIL_PASSWORD"
+
+          # Run bestmodel.py in the same container
+          docker exec my_model_container python bestmodel.py
+          echo "Subject: GitHub Actions - bestmodel.py Completed" > email.txt
+          echo "To: $RECIPIENT_EMAIL" >> email.txt
+          echo "bestmodel.py has completed successfully." >> email.txt
+          curl --url "smtp://$SMTP_SERVER:$SMTP_PORT" --ssl-reqd \
+               --mail-from "$EMAIL_USERNAME" \
+               --mail-rcpt "$RECIPIENT_EMAIL" \
+               --upload-file email.txt \
+               --user "$EMAIL_USERNAME:$EMAIL_PASSWORD"
+
+          # Stop and remove the container after all scripts complete
+          docker stop my_model_container
+          docker rm my_model_container
