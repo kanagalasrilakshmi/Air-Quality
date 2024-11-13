@@ -150,7 +150,9 @@ class XGBoostPM25Model:
         print(f"Plot saved at {plot_path}")
 
 def main():
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:///app/mlruns"))
     mlflow.set_experiment("PM2.5 XGBoost Prediction")
+    
     curr_dir = os.getcwd()
     data_prepocessing_path_pkl = os.path.join(curr_dir,'DataPreprocessing/src/data_store_pkl_files')
     sys.path.append(data_prepocessing_path_pkl)
@@ -186,5 +188,4 @@ def main():
         xgb_model.plot_results(y_pred_original)
     mlflow.end_run()
 if __name__ == "__main__":
-    # mlflow.set_tracking_uri("file:///opt/airflow/dags/mlruns")
     main()

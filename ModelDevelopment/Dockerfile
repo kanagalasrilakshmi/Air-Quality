@@ -24,4 +24,4 @@ RUN mkdir -p /app/artifacts
 RUN chmod +x Training/*.py Validation/*.py ModelBias/*.py
 
 # Run scripts in sequence with 'python' in front of each
-CMD ["sh", "-c", "python Training/Prophet.py && python Validation/Prophet.py && python ModelBias/Model_bias.py && python bestmodel.py"]
+CMD ["sh", "-c", "python Training/Prophet.py && python Validation/Prophet.py && python Training/RandomForest.py && Validation/RandomForest.py && Training/XGBoost.py && Validation/XGBoost.py python ModelBias/Model_bias.py && python bestmodel.py"]

@@ -78,13 +78,15 @@ class XGBoostPM25Model:
         print(f"Model saved at {self.model_save_path}")
 
 def main():
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:///app/mlruns"))
     mlflow.set_experiment("PM2.5 XGBoost Prediction")
+   
     curr_dir = os.getcwd()
     data_prepocessing_path_pkl = os.path.join(curr_dir,'DataPreprocessing/src/data_store_pkl_files')
     sys.path.append(data_prepocessing_path_pkl)
     # Step 2: Define file paths
     train_file = os.path.join(data_prepocessing_path_pkl, 'train_data/feature_eng_train_data.pkl')
-    model_save_path = os.path.join(curr_dir, 'dags/weights/xgboost_pm25_model.pth')
+    model_save_path = os.path.join(curr_dir, 'weights/xgboost_pm25_model.pth')
 
     if mlflow.active_run():
         mlflow.end_run()
@@ -100,5 +102,4 @@ def main():
         xgb_model.save_weights()
     mlflow.end_run()
 if __name__ == "__main__":
-    # mlflow.set_tracking_uri("file:///opt/airflow/dags/mlruns")
     main()

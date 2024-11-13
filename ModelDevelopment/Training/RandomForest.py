@@ -74,6 +74,7 @@ class RandomForestPM25Model:
         print(f"Model saved at {model_save_path}")
 
 def main():
+    mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI", "file:///app/mlruns"))
     mlflow.set_experiment("PM2.5 Random Forest")
     curr_dir = os.getcwd()
     data_prepocessing_path_pkl = os.path.join(curr_dir,'DataPreprocessing/src/data_store_pkl_files')
@@ -96,5 +97,4 @@ def main():
     mlflow.end_run()
 
 if __name__ == "__main__":
-    # mlflow.set_tracking_uri("file:///opt/airflow/dags/mlruns")
     main()

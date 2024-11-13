@@ -122,6 +122,4 @@ def main():
         prophet_model.save_weights()
     mlflow.end_run()
 if __name__ == "__main__":
-    # path = "/Users/srilakshmikanagala/Desktop/Air/dags"
-    # mlflow.set_tracking_uri("file:///opt/airflow/dags/mlruns")
     main()

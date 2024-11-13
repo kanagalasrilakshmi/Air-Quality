@@ -170,6 +170,4 @@ def main():
         prophet_model.plot_results(y_pred_original)
     mlflow.end_run()
 if __name__ == "__main__":
-    # path = "/Users/srilakshmikanagala/Desktop/Air/dags"
-    # mlflow.set_tracking_uri("file:///opt/airflow/dags/mlruns")
     main()
