@@ -202,6 +202,10 @@ def check_existing_model_rmse(model_name, current_rmse):
     """Check if an existing model in MLflow registry has a better or equal RMSE."""
     client = mlflow.tracking.MlflowClient()
     try:
+        registered_models = client.search_registered_models(filter_string=f"name='{model_name}'")
+        if not registered_models:
+            print(f"Model '{model_name}' not found in the registry. Assuming no previous model exists.")
+            return None
         latest_versions = client.get_latest_versions(model_name, stages=["None", "Production", "Staging"])
         best_rmse = float('inf')
         
