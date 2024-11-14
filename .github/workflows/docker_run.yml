@@ -28,7 +28,7 @@ jobs:
           docker build -t my_model_pipeline -f ModelDevelopment/Dockerfile ModelDevelopment
 
       # Step 4: Run all scripts in sequence within the same container and notify on failure
-      - name: Run scripts in sequence with failure notifications
+      - name: Run scripts in sequence with failure and success notifications
         env:
           SMTP_SERVER: "smtp.gmail.com"
           SMTP_PORT: "587"

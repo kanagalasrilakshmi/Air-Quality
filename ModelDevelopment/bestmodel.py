@@ -529,10 +529,28 @@ def select_best_model(rmse_results, bias_results, metric_weights):
 #     else:
 #         print("No model could be loaded.")
 
+def check_existing_model_rmse(model_name, current_rmse):
+    """Check if an existing model in MLflow registry has a better or equal RMSE."""
+    client = mlflow.tracking.MlflowClient()
+    try:
+        latest_version = client.get_latest_versions(model_name, stages=["None", "Production", "Staging"])
+        best_rmse = float('inf')
+        
+        for version in latest_version:
+            run_id = version.run_id
+            rmse = client.get_metric_history(run_id, 'RMSE')[-1].value  # Fetch the latest RMSE logged for this version
+            if rmse < best_rmse:
+                best_rmse = rmse
+        return best_rmse if best_rmse != float('inf') else None
+    except mlflow.exceptions.RestException:
+        # No model registered yet
+        return None
 
 def main():
     experiment_names = ["PM2.5 Random Forest", "PM2.5 XGBoost Prediction", "PM2.5 Prophet"]
     experiment_names_2 = ["Random Forest Bias Evaluation", "XGBoost Bias Evaluation", "Prophet Bias Evaluation"]
+    
+    # Load the best model and retrieve RMSE results and bias results
     model, best_rmse, best_experiment_name, best_run_id, rmse_results = get_best_model_and_load_weights(experiment_names)
     bias_results = get_bias_results(experiment_names_2)
     wrapped_model = PM25ModelWrapper(model)
@@ -544,49 +562,49 @@ def main():
         "R2": 0.2,          # R-squared weight
         "MBE": 0.1          # Mean Bias Error weight
     }
+    # rollback mechanishm
     # Run the selection function
     best_model_name, best_combined_score = select_best_model(rmse_results, bias_results, metric_weights)
+    
+    # Determine model path and load model based on the best model name
+    curr_dir = os.getcwd()
     if best_model_name == "Prophet":
-        curr_dir = os.getcwd()
         directory_weights_path = os.path.join(curr_dir, "weights/prophet_pm25_model.pth")
         model = load_prophet_model(directory_weights_path)
+        model_name = "PM2.5_Prophet_Model"
     elif best_model_name == "Random":
-        curr_dir = os.getcwd()
         directory_weights_path = os.path.join(curr_dir, "weights/randomforest_pm25_model.pth")
         model = load_randomforest_model(directory_weights_path)
+        model_name = "PM2.5_RandomForest_Model"
     elif best_model_name == "XGBoost":
-        curr_dir = os.getcwd()
         directory_weights_path = os.path.join(curr_dir, "weights/xgboost_pm25_model.pth")
         model = load_xgboost_model(directory_weights_path)
+        model_name = "PM2.5_XGBoost_Model"
     else:
         print("No valid model found.")
         return
 
-    # Log and register the best model in MLflow
-    with mlflow.start_run(run_id=best_run_id) as run:
-        mlflow.log_param("best_combined_score", best_combined_score)
-        
-        # Log the best model and push to the MLflow registry
-        if best_model_name == "Prophet":
-            model_name = "PM2.5_Prophet_Model"
-        elif best_model_name == "Random":
-            model_name = "PM2.5_RandomForest_Model"
-        elif best_model_name == "XGBoost":
-            model_name = "PM2.5_XGBoost_Model"
-        
-        # Log the model to MLflow
-        mlflow.pyfunc.log_model(
-            artifact_path="model",
-            python_model=wrapped_model,
-            registered_model_name=model_name
-        )
-        print(f"Best model '{model_name}' registered with MLflow Model Registry.")
+    # Check existing model RMSE in registry for rollback
+    existing_rmse = check_existing_model_rmse(model_name, best_rmse)
+    if existing_rmse is not None and existing_rmse <= best_rmse:
+        print(f"Existing model in registry has a better or equal RMSE ({existing_rmse}). Skipping registration.")
+    else:
+        # Log and register the new best model in MLflow
+        with mlflow.start_run(run_id=best_run_id) as run:
+            mlflow.log_param("best_combined_score", best_combined_score)
+            
+            # Log and push the best model to the MLflow registry
+            mlflow.pyfunc.log_model(
+                artifact_path="model",
+                python_model=wrapped_model,
+                registered_model_name=model_name
+            )
+            print(f"Best model '{model_name}' registered with MLflow Model Registry.")
 
     print(f"\nBest model selected: {best_model_name} with combined score: {best_combined_score}")
-    print(best_model_name)
-    print(best_combined_score)
-    print(bias_results)
-    print(rmse_results)
+    print("Model Details:", best_model_name, best_combined_score)
+    print("Bias Results:", bias_results)
+    print("RMSE Results:", rmse_results)
 
 if __name__ == "__main__":
     main()
