@@ -3,3 +3,13 @@
 [2024-11-14T04:02:44.923+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:02:44.922+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py
 [2024-11-14T04:02:47.121+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py
 [2024-11-14T04:02:47.149+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py took 2.236 seconds
+[2024-11-14T04:03:17.908+0000] {processor.py:161} INFO - Started process (PID=31456) to work on /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py
+[2024-11-14T04:03:17.909+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py for tasks to queue
+[2024-11-14T04:03:17.910+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:03:17.910+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py
+[2024-11-14T04:03:19.444+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py
+[2024-11-14T04:03:19.462+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py took 1.565 seconds
+[2024-11-14T04:03:49.847+0000] {processor.py:161} INFO - Started process (PID=31556) to work on /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py
+[2024-11-14T04:03:49.851+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py for tasks to queue
+[2024-11-14T04:03:49.859+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:03:49.859+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py
+[2024-11-14T04:03:51.359+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py
+[2024-11-14T04:03:51.383+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/ModelDevelopment/Validation/RandomForest.py took 1.546 seconds

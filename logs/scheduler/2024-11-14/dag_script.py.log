@@ -6,3 +6,27 @@
 [2024-11-14T04:02:29.769+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:02:29.769+0000] {dag.py:3096} INFO - Sync 1 DAGs
 [2024-11-14T04:02:29.778+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:02:29.778+0000] {dag.py:3954} INFO - Setting next_dagrun for datapipeline_new to None, run_after=None
 [2024-11-14T04:02:29.787+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/dag_script.py took 1.295 seconds
+[2024-11-14T04:03:00.073+0000] {processor.py:161} INFO - Started process (PID=31401) to work on /opt/airflow/dags/dag_script.py
+[2024-11-14T04:03:00.074+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/dag_script.py for tasks to queue
+[2024-11-14T04:03:00.077+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:03:00.077+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/dag_script.py
+[2024-11-14T04:03:01.232+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py:485 RemovedInAirflow3Warning: provide_context is deprecated as of 2.0 and is no longer required
+[2024-11-14T04:03:01.303+0000] {processor.py:840} INFO - DAG(s) 'datapipeline_new' retrieved from /opt/airflow/dags/dag_script.py
+[2024-11-14T04:03:01.401+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:03:01.400+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2024-11-14T04:03:01.422+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:03:01.421+0000] {dag.py:3954} INFO - Setting next_dagrun for datapipeline_new to None, run_after=None
+[2024-11-14T04:03:01.438+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/dag_script.py took 1.376 seconds
+[2024-11-14T04:03:31.990+0000] {processor.py:161} INFO - Started process (PID=31501) to work on /opt/airflow/dags/dag_script.py
+[2024-11-14T04:03:31.991+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/dag_script.py for tasks to queue
+[2024-11-14T04:03:31.995+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:03:31.994+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/dag_script.py
+[2024-11-14T04:03:33.034+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py:485 RemovedInAirflow3Warning: provide_context is deprecated as of 2.0 and is no longer required
+[2024-11-14T04:03:33.041+0000] {processor.py:840} INFO - DAG(s) 'datapipeline_new' retrieved from /opt/airflow/dags/dag_script.py
+[2024-11-14T04:03:33.076+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:03:33.076+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2024-11-14T04:03:33.083+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:03:33.083+0000] {dag.py:3954} INFO - Setting next_dagrun for datapipeline_new to None, run_after=None
+[2024-11-14T04:03:33.091+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/dag_script.py took 1.110 seconds
+[2024-11-14T04:04:03.698+0000] {processor.py:161} INFO - Started process (PID=31601) to work on /opt/airflow/dags/dag_script.py
+[2024-11-14T04:04:03.699+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/dag_script.py for tasks to queue
+[2024-11-14T04:04:03.702+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:04:03.701+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/dag_script.py
+[2024-11-14T04:04:04.735+0000] {logging_mixin.py:188} WARNING - /home/airflow/.local/lib/python3.12/site-packages/airflow/models/baseoperator.py:485 RemovedInAirflow3Warning: provide_context is deprecated as of 2.0 and is no longer required
+[2024-11-14T04:04:04.745+0000] {processor.py:840} INFO - DAG(s) 'datapipeline_new' retrieved from /opt/airflow/dags/dag_script.py
+[2024-11-14T04:04:04.789+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:04:04.788+0000] {dag.py:3096} INFO - Sync 1 DAGs
+[2024-11-14T04:04:04.795+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:04:04.795+0000] {dag.py:3954} INFO - Setting next_dagrun for datapipeline_new to None, run_after=None
+[2024-11-14T04:04:04.802+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/dag_script.py took 1.115 seconds
