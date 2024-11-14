@@ -1,0 +1,6 @@
+[2024-11-14T04:02:37.965+0000] {processor.py:161} INFO - Started process (PID=31320) to work on /opt/airflow/dags/ModelDevelopment/Validation/Prophet.py
+[2024-11-14T04:02:37.966+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/ModelDevelopment/Validation/Prophet.py for tasks to queue
+[2024-11-14T04:02:37.968+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:02:37.968+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/ModelDevelopment/Validation/Prophet.py
+[2024-11-14T04:02:38.993+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:02:38.992+0000] {plot.py:39} ERROR - Importing plotly failed. Interactive plots will not work.
+[2024-11-14T04:02:39.661+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/ModelDevelopment/Validation/Prophet.py
+[2024-11-14T04:02:39.687+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/ModelDevelopment/Validation/Prophet.py took 1.728 seconds

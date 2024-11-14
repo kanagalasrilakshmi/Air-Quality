@@ -1,0 +1,14 @@
+[2024-11-14T04:02:42.843+0000] {processor.py:161} INFO - Started process (PID=31348) to work on /opt/airflow/dags/cloud_composer_dag_withlogging.py
+[2024-11-14T04:02:42.843+0000] {processor.py:830} INFO - Processing file /opt/airflow/dags/cloud_composer_dag_withlogging.py for tasks to queue
+[2024-11-14T04:02:42.846+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:02:42.846+0000] {dagbag.py:545} INFO - Filling up the DagBag from /opt/airflow/dags/cloud_composer_dag_withlogging.py
+[2024-11-14T04:02:43.132+0000] {logging_mixin.py:188} INFO - [2024-11-14T04:02:43.131+0000] {dagbag.py:355} ERROR - Failed to import: /opt/airflow/dags/cloud_composer_dag_withlogging.py
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.12/site-packages/airflow/models/dagbag.py", line 351, in parse
+    loader.exec_module(new_module)
+  File "<frozen importlib._bootstrap_external>", line 995, in exec_module
+  File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+  File "/opt/airflow/dags/cloud_composer_dag_withlogging.py", line 6, in <module>
+    from my_operators.stacks_csv import stack_csvs_to_pickle
+ModuleNotFoundError: No module named 'my_operators'
+[2024-11-14T04:02:43.132+0000] {processor.py:842} WARNING - No viable dags retrieved from /opt/airflow/dags/cloud_composer_dag_withlogging.py
+[2024-11-14T04:02:43.161+0000] {processor.py:183} INFO - Processing /opt/airflow/dags/cloud_composer_dag_withlogging.py took 0.327 seconds
